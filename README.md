@@ -10,9 +10,13 @@ The JavaScript report system
 - MutationObserver 跟踪DOM构建
 - error监控
 - 客户端浏览器分辨率
+- 客户端名，版本号
 - 当前地址
-- 上一页地址
+- 当前title
 - 路由切换
-- 
+- history api劫持
+- hash event劫持
 
 服务器端Nodejs日志生成服务器端
+- get 请求
+- post 请求
