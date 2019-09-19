@@ -16,6 +16,7 @@ The JavaScript report system
 - 路由切换
 - history api劫持
 - hash event劫持
+- 自定义上报 get/post
 
 服务器端Nodejs日志生成服务器端
 - get 请求
