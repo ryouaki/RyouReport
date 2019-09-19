@@ -17,6 +17,7 @@ The JavaScript report system
 - history api劫持
 - hash event劫持
 - 自定义上报 get/post
+- ajax 劫持
 
 服务器端Nodejs日志生成服务器端
 - get 请求
