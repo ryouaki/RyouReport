@@ -2,7 +2,7 @@
 The JavaScript report system
 
 ## Plan
-客户端上报SDK
+客户端上报SDK[源码](https://github.com/ryouaki/RyouReport/blob/master/packages/sdk/%24ryou.js)
 - 初始化 应用名，上报服务器地址
 - 设置当前用户ID
 - 前端性能指标采集performance 页面加载完成时间，页面初始化时间，DOM解析时间（ssr），DNS查询时间，ttfb（第一个字节），请求完整耗时（spa参考意义不大），onload执行耗时，缓存获取耗时，建立服务器链接耗时
