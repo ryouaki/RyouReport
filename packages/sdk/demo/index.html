@@ -6,6 +6,7 @@
   <script>
     $ryou.init('test', 'http://localhost:8000/log');
     $ryou.autoEventReport(['click', 'mousedown']);
+    $ryou.autoReportHistory();
     window.onload = function () {
       $ryou.perf();
     }
