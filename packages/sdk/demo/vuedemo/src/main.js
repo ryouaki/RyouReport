@@ -19,6 +19,10 @@ Vue.config.errorHandler = function (err, vm, info) {
   });
 }
 
+document.addEventListener('readystatechange', (event) => {
+  console.log(event)
+});
+
 new Vue({
   router,
   store,

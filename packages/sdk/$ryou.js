@@ -51,6 +51,7 @@
     __report_host_ = host || '/log';
     __app_key_ = key || 'Ryou-Report';
     _reportHistory();
+    perf();
   }
 
   function login(userid) {
@@ -110,7 +111,7 @@
     ajaxObj.setRequestHeader("Content-type", "application/json");
     ajaxObj.send(JSON.stringify(payload));
     ajaxObj.onreadystatechange = function () {
-      if (!(ajaxObj.readyState == 4 && ajaxObj.status == 200)) {
+      if (ajaxObj.readyState == 4 && ajaxObj.status != 200) {
         console.error(ajaxObj.responseText);
       }
     };
@@ -194,7 +195,11 @@
   }
 
   function perf() {
-    _sendGet('perf', _getPerformanceInfo());
+    global.addEventListener('load', function () {
+      setTimeout(function timeout() {
+        _sendGet('perf', _getPerformanceInfo());
+      })
+    }, false);
   }
 
   function err(error) {
@@ -216,7 +221,6 @@
   RyouReport.log = log;
   RyouReport.event = event;
   RyouReport.err = err;
-  RyouReport.perf = perf;
   RyouReport.autoEventReport = autoEventReport;
   RyouReport.autoReportHistory = autoReportHistory;
   RyouReport.login = login;
