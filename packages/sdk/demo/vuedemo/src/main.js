@@ -8,6 +8,7 @@ import store from '@/store';
 require('./$ryou')
 $ryou.init('app', '/log');
 $ryou.autoReportHistory();
+$ryou.autoEventReport();
 Vue.config.productionTip = false;
 
 Vue.config.errorHandler = function (err, vm, info) {
