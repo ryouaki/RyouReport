@@ -14,12 +14,12 @@ module.exports = {
   devServer: {
     open: process.platform === 'darwin',
     host: 'localhost',
-    port: 8888,
+    port: 3001,
     proxy: {
-      'operation': {
-        target: 'http://localhost:8888/',
+      '/log': {
+        target: 'http://localhost:3000',
         ws: true,
-        changeOrigin: true
+        changOrigin: true
       }
     }
   },

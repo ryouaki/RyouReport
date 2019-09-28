@@ -6,9 +6,17 @@ import App from '@/views/App.vue';
 import router from '@/route';
 import store from '@/store';
 require('./$ryou')
-$ryou.init('app', 'http://localhost:3000/log');
+$ryou.init('app', '/log');
 $ryou.autoReportHistory();
 Vue.config.productionTip = false;
+
+Vue.config.errorHandler = function (err, vm, info) {
+  $ryou.err({
+    message: err.message,
+    source: vm.$options.name,
+    error: info
+  });
+}
 
 new Vue({
   router,

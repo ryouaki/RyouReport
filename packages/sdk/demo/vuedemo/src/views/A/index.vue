@@ -6,7 +6,10 @@
 </template>
 <script>
 export default {
-  name: 'A'
+  name: 'A',
+    created() {
+    a.b = c;
+  }
 };
 </script>
 <style>
