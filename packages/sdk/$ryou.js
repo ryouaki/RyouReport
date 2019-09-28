@@ -2,13 +2,43 @@
   var RyouReport = global.$ryou = {};
 
   var __report_host_ = '/log';
-  var __app_key_ = 'Ryou Report';
+  var __app_key_ = 'Ryou_Report';
   var __usid_ = '';
+  var __history_key_url_ = 'ryou-pre-url';
+  var __history_key_date_ = 'ryou-pre-date';
   var __uuid_ = _guid(); 
+
+  function _reportHistory() {
+    var url = sessionStorage.getItem(__history_key_url_);
+    var date = sessionStorage.getItem(__history_key_date_);
+    var hasQuery = location.href.indexOf('?');
+    var currentUrl = hasQuery > 0 ? location.href.substr(0, hasQuery) : location.href;
+    var now = new Date().getTime();
+
+    if (!url || !date || url != currentUrl) {
+      sessionStorage.setItem(__history_key_url_, currentUrl);
+      sessionStorage.setItem(__history_key_date_, now);
+    } 
+    
+    if (url != currentUrl) {
+      _sendGet('navigation', {
+        from: url,
+        to: currentUrl,
+        newTime: now,
+        lastTime: date
+      })
+    }
+  }
+
+  function autoReportHistory() {
+    global.addEventListener("hashchange", _reportHistory);
+    global.addEventListener("popstate", _reportHistory);
+  }
 
   function init(key, host) {
     __report_host_ = host || '/log';
     __app_key_ = key || 'Ryou-Report';
+    _reportHistory();
   }
 
   function login(userid) {
@@ -176,6 +206,7 @@
   RyouReport.err = err;
   RyouReport.perf = perf;
   RyouReport.autoEventReport = autoEventReport;
+  RyouReport.autoReportHistory = autoReportHistory;
   RyouReport.login = login;
 
   RyouReport.version = '1.0.0';
