@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="ryou.report.js"></script>
+  <script>
+    $ryou.init('test', 'http://localhost:8000/log');
+    $ryou.autoEventReport(['click', 'mousedown']);
+    window.onload = function () {
+      $ryou.perf();
+    }
+
+    window.onerror = function (message, source, lineno, colno, error) {
+      $ryou.err({ message: message, source: source, lineno: lineno, colno: colno, error: error });
+    }
+
+    /* for vue (未完成)
+      Vue.config.errorHandler = function (err, vm, info) {
+        RyouReport.err({message: err, source: vm, error: info});
+      }
+    */
+
+    /* for react (未完成)
+      componentDidCatch(error, info) {
+        RyouReport.err({message: error, error: info});
+      }
+    */
+  </script>
+</head>
+
+<body>
+  <button id="testtt">lalala</button>
+  <script>
+    setTimeout(() => {
+      use_PerformanceEntry_methods();
+    }, 1000);
+  </script>
+</body>
+
+</html>
