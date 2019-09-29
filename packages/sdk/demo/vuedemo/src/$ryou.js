@@ -8,6 +8,23 @@
   var __history_key_date_ = 'ryou-pre-date';
   var __uuid_ = _guid(); 
 
+  function listenAjax() {
+    var  XMLHttpRequest;
+  }
+
+  function catchGlobalError() {
+    window.addEventListener('error', (msg) => {
+      err({
+        message: msg.message,
+        source: msg.filename,
+        lineno: msg.lineno,
+        colno: msg.colno,
+        error: msg.error
+      })
+      return true;
+    }, true);
+  }
+
   function _reportHistory() {
     var now = new Date().getTime();
     var url = sessionStorage.getItem(__history_key_url_);
@@ -31,8 +48,8 @@
   }
 
   function autoReportHistory() {
-    global.addEventListener("hashchange", _reportHistory);
-    global.addEventListener("popstate", _reportHistory);
+    global.addEventListener("hashchange", _reportHistory, true);
+    global.addEventListener("popstate", _reportHistory, true);
     if (history) {
       var _pushState = history.pushState;
       var _replaceState = history.replaceState;
@@ -190,7 +207,7 @@
       })
     }
     registryEvents.forEach((event) => {
-      global.addEventListener(event, eventReport, false);
+      global.addEventListener(event, eventReport, true);
     })
   }
 
@@ -199,7 +216,7 @@
       setTimeout(function timeout() {
         _sendGet('perf', _getPerformanceInfo());
       })
-    }, false);
+    }, true);
   }
 
   function err(error) {
@@ -221,6 +238,7 @@
   RyouReport.log = log;
   RyouReport.event = event;
   RyouReport.err = err;
+  RyouReport.catchGlobalError = catchGlobalError;
   RyouReport.autoEventReport = autoEventReport;
   RyouReport.autoReportHistory = autoReportHistory;
   RyouReport.login = login;

@@ -9,6 +9,7 @@ require('./$ryou')
 $ryou.init('app', '/log');
 $ryou.autoReportHistory();
 $ryou.autoEventReport(['click']);
+$ryou.catchGlobalError();
 Vue.config.productionTip = false;
 
 Vue.config.errorHandler = function (err, vm, info) {
@@ -19,9 +20,19 @@ Vue.config.errorHandler = function (err, vm, info) {
   });
 }
 
-document.addEventListener('readystatechange', (event) => {
-  console.log(event)
-});
+// var xhr = XMLHttpRequest;
+
+// window.XMLHttpRequest = function () {
+//   return new xhr();
+// }
+
+// var x = new XMLHttpRequest();
+
+// x.open('get', '/log');
+
+// x.send();
+
+a.b = c
 
 new Vue({
   router,
