@@ -20,19 +20,60 @@ Vue.config.errorHandler = function (err, vm, info) {
   });
 }
 
-// var xhr = XMLHttpRequest;
+var oldXhr = XMLHttpRequest;
 
-// window.XMLHttpRequest = function () {
-//   return new xhr();
-// }
+window.XMLHttpRequest = function () {
+  var xhr = new oldXhr();
+  var _open = xhr.open;
+  var _send = xhr.send;
+  var _start = null;
+  var _method = null;
+  var _body = null;
 
-// var x = new XMLHttpRequest();
+  xhr.open = function () {
+    _start = new Date();
+    _method = arguments[0];
+    _open.apply(xhr, arguments);
+  }
 
-// x.open('get', '/log');
+  xhr.send = function () {
+    _body = arguments[0];
+    _send.apply(xhr, arguments);
+  }
 
-// x.send();
+  xhr.addEventListener('readystatechange', function () {
+    if (xhr.readyState === 4) {
+      var _time = new Date() - _start;
+      if (xhr.status != 200) {
+        $ryou.err({
+          time: _time,
+          url: xhr.responseURL,
+          responseText: xhr.responseText,
+          status: xhr.status,
+          method: _method,
+          body: _body
+        })
+      } else {
+        $ryou.log({
+          time: _time,
+          url: xhr.responseURL,
+          responseText: xhr.responseText,
+          status: xhr.status,
+          method: _method,
+          body: _body
+        })
+      }
+    }
+    return true;
+  }, true);
+  return xhr;
+}
 
-a.b = c
+var x = new XMLHttpRequest();
+
+x.open('get', '/log?1=1');
+
+x.send();
 
 new Vue({
   router,

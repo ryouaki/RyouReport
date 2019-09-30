@@ -45,6 +45,7 @@
         lastTime: date == null ? now : date
       })
     }
+    return true;
   }
 
   function autoReportHistory() {
@@ -205,6 +206,7 @@
         event: event.type,
         value: xpath
       })
+      return true;
     }
     registryEvents.forEach((event) => {
       global.addEventListener(event, eventReport, true);

@@ -1,5 +1,5 @@
 <template>
-  <section class="introduction__section">
+  <section >
     Hello A
     <router-link to="b">Home</router-link>
   </section>
@@ -13,8 +13,4 @@ export default {
 };
 </script>
 <style>
-.introduction__section {
-  width: 100%;
-  height: 100%;
-}
 </style>
