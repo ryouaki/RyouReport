@@ -1,15 +1,59 @@
 (function (global) {
   var RyouReport = global.$ryou = {};
 
-  var __report_host_ = '/log';
+  var __report_host_ = '';
   var __app_key_ = 'Ryou Report';
   var __usid_ = '';
   var __history_key_url_ = 'ryou-pre-url';
   var __history_key_date_ = 'ryou-pre-date';
-  var __uuid_ = _guid(); 
+  var __uuid_ = _guid();
 
   function listenAjax() {
-    var  XMLHttpRequest;
+    if (!XMLHttpRequest) {
+      return;
+    }
+    var oldXhr = XMLHttpRequest;
+
+    global.XMLHttpRequest = function () {
+      var xhr = new oldXhr();
+      var _open = xhr.open;
+      var _send = xhr.send;
+      var _start = null;
+      var _method = null;
+      var _body = null;
+
+      xhr.open = function () {
+        _start = new Date();
+        _method = arguments[0];
+        _open.apply(xhr, arguments);
+      }
+
+      xhr.send = function () {
+        _body = arguments[0];
+        _send.apply(xhr, arguments);
+      }
+
+      xhr.addEventListener('readystatechange', function () {
+        if (xhr.readyState === 4 && xhr.responseURL != __report_host_) {
+          var _time = new Date() - _start;
+          var retBody = {
+            time: _time,
+            url: xhr.responseURL,
+            responseText: xhr.responseText,
+            status: xhr.status,
+            method: _method,
+            body: _body
+          }
+          if (xhr.status != 200) {
+            err(retBody)
+          } else {
+            log(retBody)
+          }
+        }
+        return true;
+      }, true);
+      return xhr;
+    }
   }
 
   function catchGlobalError() {
@@ -31,12 +75,12 @@
     var date = sessionStorage.getItem(__history_key_date_);
     var hasQuery = location.href.indexOf('?');
     var currentUrl = hasQuery > 0 ? location.href.substr(0, hasQuery) : location.href;
-    
+
     if (!url || !date || url != currentUrl) {
       sessionStorage.setItem(__history_key_url_, currentUrl);
       sessionStorage.setItem(__history_key_date_, now);
-    } 
-    
+    }
+
     if (url != currentUrl) {
       _sendGet('navigation', {
         from: url == null ? '' : url,
@@ -66,7 +110,16 @@
   }
 
   function init(key, host) {
-    __report_host_ = host || '/log';
+    var idx = -1;
+    if (host) {
+      idx = host.indexOf('http');
+    }
+    if (idx >= 0) {
+      __report_host_ = host + '/log';
+    } else {
+      __report_host_ = location.protocol + '//' + location.host + '/log';
+    }
+
     __app_key_ = key || 'Ryou-Report';
     _reportHistory();
     perf();
@@ -77,8 +130,8 @@
   }
 
   function _guid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
@@ -104,7 +157,7 @@
     var keys = Object.keys(log);
     var len = keys.length;
 
-    for ( var i = 0; i < len; i++) {
+    for (var i = 0; i < len; i++) {
       retStr += keys[i] + '=' + log[keys[i]] + '&';
     }
 
@@ -114,10 +167,10 @@
   function _sendGet(type, data) {
     var log = _toQuery(_formatData(data));
     var img = document.createElement('img');
-    img.src = __report_host_ + '?type=' + type + '&' +log;
+    img.src = __report_host_ + '?type=' + type + '&' + log;
     img.onload = img.onerror = function () {
       img.onload = null,
-      img.onerror = null
+        img.onerror = null
     };
   }
 
@@ -150,14 +203,14 @@
       connectEnd: 0,
       connectStart: 0
     };
-  
+
     return {
-      loadPage: timing.loadEventEnd - timing.navigationStart, 
-      beforeLoad: timing.loadEventStart - timing.navigationStart, 
-      domReady: timing.domComplete - timing.responseEnd, 
-      lookupDomain: timing.domainLookupEnd - timing.domainLookupStart, 
-      ttfb: timing.responseStart - timing.navigationStart, 
-      request: timing.responseEnd - timing.requestStart, 
+      loadPage: timing.loadEventEnd - timing.navigationStart,
+      beforeLoad: timing.loadEventStart - timing.navigationStart,
+      domReady: timing.domComplete - timing.responseEnd,
+      lookupDomain: timing.domainLookupEnd - timing.domainLookupStart,
+      ttfb: timing.responseStart - timing.navigationStart,
+      request: timing.responseEnd - timing.requestStart,
       loadEvent: timing.loadEventEnd - timing.loadEventStart,
       appcache: timing.domainLookupStart - timing.fetchStart,
       connect: timing.connectEnd - timing.connectStart
@@ -165,21 +218,21 @@
   }
 
   function _getXPath(element) {
-    if (element.id && element.id.length > 0) { 
+    if (element.id && element.id.length > 0) {
       return `//*[@id="${element.id}"]`
     }
-    
+
     if (element === document.body) {
       return '/html/' + element.tagName.toLowerCase()
     }
-  
+
     if (element.parentNode) {
-      var siblings = element.parentNode.childNodes 
+      var siblings = element.parentNode.childNodes
       siblings = Array.from(siblings).filter((sibling) => {
         return sibling.tagName === element.tagName
       })
       var len = siblings.length
-    
+
       if (len === 1) {
         return _getXPath(element.parentNode) + '/' + element.tagName.toLowerCase()
       } else if (len > 1) {
@@ -240,6 +293,7 @@
   RyouReport.log = log;
   RyouReport.event = event;
   RyouReport.err = err;
+  RyouReport.listenAjax = listenAjax;
   RyouReport.catchGlobalError = catchGlobalError;
   RyouReport.autoEventReport = autoEventReport;
   RyouReport.autoReportHistory = autoReportHistory;
